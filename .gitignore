@@ -1,0 +1,42 @@
+# IntelliJ IDEA
+.idea/
+
+# Compiled files
+out/
+target/
+
+# Project files
+*.iml
+*.iws
+*.ipr
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+.idea_modules/
+
+# User-specific files
+*.iml
+*.ipr
+*.iws
+*.editorconfig
+
+# Dependency directories
+.idea/
+.ideaLibs/
+.idea_modules/
+*.iml
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration files
+.idea/
+
+# Caches
+.caches/
+*.log
+
