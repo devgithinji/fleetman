@@ -63,7 +63,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fleetman-position-api-gateway
+  name: fleetman-api-gateway
 spec:
   #defines which pods are going to be represented by this service
   #the service becomes a network endpoint for other services
