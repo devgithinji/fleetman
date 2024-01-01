@@ -32,3 +32,12 @@ deployment done in kubernetes
 * might feel like you're tied to AWS
 
 
+## Advanced topics in k8s
+* Request and limits
+* Horizontal pod autoscaling
+* Liveness and readiness probes
+* Role based access controls
+* configMap and secrets
+* ingress control
+* jobs, Daemonsets and stateful sets
+* CI/CD
