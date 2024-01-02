@@ -15,10 +15,13 @@ spec:
       containers:
         - name: queue
           image: richardchesterwood/k8s-fleetman-queue:release2
-          resources:
-            requests:
-              memory: 300Mi
-              cpu: 100m
+#          resources:
+#            requests:
+#              memory: 300Mi
+#              cpu: 100m
+#            limits:
+#              memory: 300Mi
+#              cpu: 100m
 
 
 ---
@@ -42,10 +45,21 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: production-microservice
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: database.url
+                  name: global-database-config
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: database.password
+                  name: global-database-config
           resources:
             requests:
               memory: 200Mi
               cpu: 50m
+
 
 ---
 apiVersion: apps/v1
