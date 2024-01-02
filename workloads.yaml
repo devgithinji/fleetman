@@ -83,7 +83,7 @@ spec:
   selector:
     matchLabels:
       app: api-gateway
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
@@ -92,6 +92,10 @@ spec:
       containers:
         - name: api-gateway
           image: richardchesterwood/k8s-fleetman-api-gateway:performance
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: production-microservice
