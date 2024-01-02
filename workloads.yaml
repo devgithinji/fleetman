@@ -45,16 +45,9 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: production-microservice
-            - name: DATABASE_URL
-              valueFrom:
-                configMapKeyRef:
-                  key: database.url
-                  name: global-database-config
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  key: database.password
-                  name: global-database-config
+          envFrom:
+            - configMapRef:
+                name: global-database-config
           resources:
             requests:
               memory: 200Mi
