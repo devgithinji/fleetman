@@ -4,7 +4,7 @@ Application developed in Java spring boot on the backend and Angular js on the f
 
 ## Architecture used:
 
-![architecture diagram](assests/architecture_diagram_two.png)
+![architecture diagram](assests/architecture.drawio.png)
 
 deployment done in kubernetes
 
