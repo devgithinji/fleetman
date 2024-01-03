@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: global-database-config
+  namespace: default
+data:
+  database.properties: |
+    database.url=http://dbserver.somewhere.com:3306
+    database.password=p@ssW0rd@!
+
+
