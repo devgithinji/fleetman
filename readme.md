@@ -190,7 +190,273 @@ spec:
 ```
 
 
+#### Ingress Controller Overview
+
+In Kubernetes, an Ingress Controller acts as an intelligent entry point for external traffic to your cluster, providing HTTP and HTTPS routing to services based on defined rules. It simplifies and centralizes the management of external access to services, making it easier to expose multiple applications and services through a single entry point.
+
+##### The Problem It Solves
+
+Without an Ingress Controller, managing external access to services can be cumbersome. Each service would require its own LoadBalancer or NodePort, making it difficult to scale and manage as the number of services grows. Ingress Controllers solve this problem by providing a unified and flexible way to handle external traffic.
+
+###### Setup
+Ingress Resource
+
+The Ingress resource in Kubernetes defines how external HTTP/S traffic should be routed to your services. It acts as a configuration file for the Ingress Controller, specifying rules for routing requests based on hostnames, paths, and other criteria.
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+    - host: mydomain.com
+      http:
+        paths:
+          - path: /app
+            pathType: Prefix
+            backend:
+              service:
+                name: my-app-service
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: my-api-service
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - mydomain.com
+      secretName: my-tls-secret
+
+```
+
+* metadata: Specifies metadata for the Ingress resource, including its name.
+* spec: Defines the rules for routing traffic.
+  * rules: Specifies the hostnames and their associated paths.
+    * Requests to mydomain.com/app are directed to my-app-service.
+    * Requests to mydomain.com/api are directed to my-api-service.
+  * tls: Optional block for enabling TLS/SSL termination.
+    * hosts: Specifies the host for which TLS is enabled.
+    * secretName: References the Kubernetes Secret containing the TLS certificate and key.
+
+
+Ingress Controller
+
+The Ingress Controller is a pod running in your Kubernetes cluster responsible for implementing the rules defined in the Ingress resource. It interprets the Ingress rules and configures the underlying load balancer to direct traffic accordingly.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ingress-nginx
+  template:
+    metadata:
+      labels:
+        app: ingress-nginx
+    spec:
+      containers:
+        - name: ingress-nginx-controller
+          image: k8s.gcr.io/ingress-nginx/controller:v1.2.1
+          args:
+            - /nginx-ingress-controller
+            - --publish-service=ingress-nginx-controller
+            - --election-id=ingress-controller-leader
+            - --ingress-class=nginx
+
+```
+
+* metadata: Specifies metadata for the Deployment, including its name and namespace.
+* spec: Defines the deployment specification.
+  * replicas: Number of Ingress Controller pods to run.
+  * selector: Matches the labels of the Ingress Controller pods.
+  * template: Defines the pod template.
+    * containers: Specifies the Ingress Controller container.
+    * image: Docker image for the Nginx Ingress Controller (k8s.gcr.io/ingress-nginx/controller:v1.2.1).
+    * args: Command-line arguments for the Ingress Controller, specifying configuration options like the ingress class, election ID, and publish service.
+
+###### Summary
+Ingress Resource:
+
+* Acts as a configuration file for the Ingress Controller.
+* Specifies rules for routing external HTTP/S traffic.
+* Defines TLS/SSL configurations if needed.
+
+Ingress Controller:
+
+* Implements Ingress rules by configuring the underlying load balancer.
+* Runs as a pod in the Kubernetes cluster.
+* Interprets and applies rules defined in the Ingress resource.
+
+##### Main Functions of Ingress Controllers
+
+###### Routing External Traffic:
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+    - host: mydomain.com
+      http:
+        paths:
+          - path: /frontend
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+          - path: /backend
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 80
+
+```
+
+Routes external HTTP traffic based on rules defined in the Ingress resource.
+
+Requests to mydomain.com/frontend are directed to the frontend service, and requests to mydomain.com/backend are directed to the backend service.
+
+###### TLS/SSL Termination
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+    - host: mydomain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-service
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - mydomain.com
+      secretName: my-tls-secret
+```
+
+Enables termination of TLS/SSL encryption at the Ingress Controller.
+
+The tls block specifies the host and the secret containing the SSL certificate.
+
+###### Path-Based Routing
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+    - host: mydomain.com
+      http:
+        paths:
+          - path: /app
+            pathType: Prefix
+            backend:
+              service:
+                name: my-app-service
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: my-api-service
+                port:
+                  number: 8080
+```
+
+Routes traffic based on the path of the URL.
+
+Requests to mydomain.com/app are directed to the my-app-service, and requests to mydomain.com/api are directed to the my-api-service
+
+###### TCP and UDP Load Balancing
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-tcp-ingress
+  namespace: ingress-nginx
+annotations:
+  nginx.ingress.kubernetes.io/backend-protocol: "TCP"
+spec:
+  rules:
+  - host: mydomain.com
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+  tcp:
+  - port: 5000
+    backend:
+      service:
+        name: tcp-service
+        port:
+          number: 5000
+
+```
+
+Facilitates TCP/UDP load balancing for non-HTTP services.
+
+The tcp block specifies a backend service (tcp-service) and port (5000) for TCP traffic.
+
+###### Rewriting and Redirection
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+  - host: mydomain.com
+    http:
+      paths:
+      - path: /old-path
+        pathType: Prefix
+        backend:
+          service:
+            name: old-service
+            port:
+              number: 80
+        pathType: Prefix
+        pathRewrite:
+          rewriteTarget: /new-path
+```
+
+Supports URL path rewriting and redirection.
+
+Requests to mydomain.com/old-path are rewritten to mydomain.com/new-path before being directed to the old-service.
+
 * Role based access controls
-* ingress control
 * jobs, Daemonsets and stateful sets
 * CI/CD
