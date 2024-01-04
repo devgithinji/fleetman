@@ -1,6 +1,8 @@
 # FleetMan web application
 
-Application developed in Java spring boot on the backend and Angular js on the frontend
+Vehicle tracking Application developed in Java spring boot on the backend and Angular js on the frontend
+
+The position simulator microservice is to simulate the work of the GPS devices that could have been installed on the vehicles 
 
 ## Architecture used:
 
