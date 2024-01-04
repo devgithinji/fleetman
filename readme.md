@@ -459,6 +459,112 @@ Supports URL path rewriting and redirection.
 
 Requests to mydomain.com/old-path are rewritten to mydomain.com/new-path before being directed to the old-service.
 
+
+##### Jobs
+A Job in Kubernetes is a task or set of tasks that run to completion. It's a mechanism to run a containerized workload until it succeeds. Once the specified number of successful completions is reached, the Job is considered complete.
+
+```
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: my-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: my-container
+        image: my-image
+  completions: 1  # Number of successful completions
+
+```
+
+* Defines a Job named my-job.
+* The Job runs a container named my-container using the specified image (my-image).
+* The completions field is set to 1, meaning the Job will be considered complete after one successful completion
+
+##### CronJobs
+A CronJob is a time-based job scheduler in Kubernetes. It allows you to run Jobs periodically at specified intervals using cron syntax.
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: my-cronjob
+spec:
+  schedule: "*/5 * * * *"  # Run every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: my-container
+            image: my-image
+
+```
+
+* Defines a CronJob named my-cronjob.
+* The schedule field uses cron syntax (*/5 * * * *), indicating that the Job inside the CronJob will run every 5 minutes.
+* The Job runs a container named my-container using the specified image (my-image).
+
+##### DaemonSets
+
+A DaemonSet ensures that all (or some) nodes run a copy of a pod. It's useful for running a single instance of a pod on each node in a cluster, typically for background tasks, log collection, or monitoring agents.
+
+```
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: my-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image
+
+```
+
+* Defines a DaemonSet named my-daemonset.
+* Ensures that all nodes with labels matching app: my-app run a copy of the pod defined in the template.
+* The pod runs a container named my-container using the specified image (my-image).
+
+##### StatefulSets
+
+A StatefulSet is used to manage stateful applications, like databases, where each pod has a unique identifier and maintains its state across rescheduling.
+
+```
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: my-statefulset
+spec:
+  serviceName: "my-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image
+
+```
+
+* Defines a StatefulSet named my-statefulset.
+* Creates a headless service named my-service for the StatefulSet pods.
+* The StatefulSet ensures that there are three replicas (pods) running with unique identifiers.
+* Each pod runs a container named my-container using the specified image (my-image).
+
+
 * Role based access controls
-* jobs, Daemonsets and stateful sets
 * CI/CD
