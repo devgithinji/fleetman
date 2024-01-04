@@ -4,6 +4,7 @@ metadata:
   name: public-routing
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
 spec:
   rules:
     - host: fleetman.com
