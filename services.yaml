@@ -71,11 +71,9 @@ spec:
   #or maybe external users to connect (eg browser)
   selector:
     app: api-gateway
-
   ports:
     - name: http
       port: 8080
       nodePort: 30020
-
 
   type: NodePort
